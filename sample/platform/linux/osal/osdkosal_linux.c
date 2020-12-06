@@ -76,7 +76,7 @@ E_OsdkStat OsdkLinux_TaskDestroy(T_OsdkTaskHandle task) {
  * @return an enum that represents a status of OSDK
  */
 E_OsdkStat OsdkLinux_TaskSleepMs(uint32_t time_ms) {
-  usleep(1000 * time_ms);
+  usleep(1000 * time_ms);                                       //改这拿个东西 也太久了 10001改成了100
 
   return OSDK_STAT_OK;
 }

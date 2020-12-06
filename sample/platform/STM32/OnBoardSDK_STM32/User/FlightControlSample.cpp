@@ -766,41 +766,16 @@ moveByPositionOffset(float xOffsetDesired, float yOffsetDesired,
 /*! Very simple calculation of local NED offset between two pairs of GPS
  *  coordinates (accurate when distances are small).
  */
-void
-localOffsetFromGpsOffset(Vehicle* vehicle, Telemetry::Vector3f& deltaNed,
-                         void* target, void* origin)
-{
-  Telemetry::GPSFused*       subscriptionTarget;
-  Telemetry::GPSFused*       subscriptionOrigin;
-  Telemetry::GlobalPosition* broadcastTarget;
-  Telemetry::GlobalPosition* broadcastOrigin;
-  double                     deltaLon;
-  double                     deltaLat;
-
-  if (v->getFwVersion() != Version::M100_31)
-  {
-    subscriptionTarget = (Telemetry::GPSFused*)target;
-    subscriptionOrigin = (Telemetry::GPSFused*)origin;
-    deltaLon   = subscriptionTarget->longitude - subscriptionOrigin->longitude;
-    deltaLat   = subscriptionTarget->latitude - subscriptionOrigin->latitude;
-    deltaNed.x = deltaLat * C_EARTH;
-    deltaNed.y = deltaLon * C_EARTH * cos(subscriptionTarget->latitude);
-    deltaNed.z = subscriptionTarget->altitude - subscriptionOrigin->altitude;
-  }
-  else
-  {
-    broadcastTarget = (Telemetry::GlobalPosition*)target;
-    broadcastOrigin = (Telemetry::GlobalPosition*)origin;
-    deltaLon        = broadcastTarget->longitude - broadcastOrigin->longitude;
-    deltaLat        = broadcastTarget->latitude - broadcastOrigin->latitude;
-    deltaNed.x      = deltaLat * C_EARTH;
-    deltaNed.y      = deltaLon * C_EARTH * cos(broadcastTarget->latitude);
-    deltaNed.z      = broadcastTarget->altitude - broadcastOrigin->altitude;
-  }
+Vector3f vector3FSub(const Vector3f& vectorA,
+                                   const Vector3f& vectorB) {
+  Telemetry::Vector3f result;
+  result.x = vectorA.x - vectorB.x;
+  result.y = vectorA.y - vectorB.y;
+  result.z = vectorA.z - vectorB.z;
+  return result;
 }
 
-Telemetry::Vector3f
-toEulerAngle(void* quaternionData)
+Vector3f toEulerAngle(void* quaternionData)
 {
   Telemetry::Vector3f    ans;
   Telemetry::Quaternion* quaternion = (Telemetry::Quaternion*)quaternionData;

@@ -80,41 +80,62 @@ typedef struct HotPointSettings
  */
 typedef struct WayPointInitSettings
 {
-  uint8_t   indexNumber; /*!< Total number of waypoints <br>*/
-  float32_t maxVelocity; /*!< Maximum speed joystick input(2~15m) <br>*/
-  float32_t idleVelocity; /*!< Cruising Speed */
-  /*!< (without joystick input, no more than vel_cmd_range) */
-  uint8_t finishAction; /*!< Action on finish <br>*/
+  uint8_t   indexNumber; /*!< Total number of waypoints <br> 航点总数<br>*/
+  float32_t maxVelocity; /*!< Maximum speed joystick input(2~15m) <br> 最大速度操纵杆输入（2〜15m）*/
+  float32_t idleVelocity; /*!< Cruising Speed 巡航速度*/
+  /*!< (without joystick input, no more than vel_cmd_range) （无操纵杆输入，不超过vel_cmd_range）*/
+  uint8_t finishAction; /*!< Action on finish <br> 完成动作<br>*/
   /*!< 0: no action <br>*/
   /*!< 1: return to home <br>*/
   /*!< 2: auto landing <br>*/
   /*!< 3: return to point 0 <br>*/
-  /*!< 4: infinite mode， no exit <br>*/
-  uint8_t executiveTimes; /*!< Function execution times <br>*/
+  /*!< 4: infinite mode， no exit <br>
+  / *！<0：无动作<br> * /
+   / *！<1：回到家<br> * /
+   / *！<2：自动着陆<br> * /
+   / *！<3：返回0点<br> * /
+   / *！<4：无限模式，无退出<br> * /*/
+
   /*!< 1: once <br>*/
-  /*!< 2: twice <br>*/
-  uint8_t yawMode; /*!< Yaw mode <br>*/
+  uint8_t executiveTimes; /*!< Function execution times <br> 函数执行时间<br>*/
+  /*!< 2: twice <br>
+  / *！<1：一次<br> * /
+   / *！<2：两次<br> * /*/
+  uint8_t yawMode; /*!< Yaw mode <br> 偏航模式<br>*/
   /*!< 0: auto mode(point to next waypoint) <br>*/
   /*!< 1: lock as an initial value <br>*/
   /*!< 2: controlled by RC <br>*/
-  /*!< 3: use waypoint's yaw(tgt_yaw) */
-  uint8_t traceMode; /*!< Trace mode <br>*/
+  /*!< 3: use waypoint's yaw(tgt_yaw) 
+  / *！<0：自动模式（指向下一个航路点）<br> * /
+   / *！<1：锁定为初始值<br> * /
+   / *！<2：由RC <br> * /控制
+   / *！<3：使用航点的偏航（tgt_yaw）* /*/
+  uint8_t traceMode; /*!< Trace mode <br> 跟踪模式<br>*/
   /*!< 0: point to point, after reaching the target waypoint hover, 
    * complete waypoints action (if any), 
    * then fly to the next waypoint <br>
    * 1: Coordinated turn mode, smooth transition between waypoints,
    * no waypoints task <br>
-   */
-  uint8_t RCLostAction; /*!< Action on rc lost <br>*/
+    <0：点对点，到达目标航路点后悬停，
+    *完成航点动作（如果有），
+    *然后飞到下一个航点<br>
+    * 1：协调转弯模式，航路点之间的平滑过渡，
+    *没有路标任务<br>
+    */
+  uint8_t RCLostAction; /*!< Action on rc lost <br> / *！<对rc的操作丢失了<br> * /*/
   /*!< 0: exit waypoint and failsafe <br>*/
-  /*!< 1: continue the waypoint <br>*/
-  uint8_t gimbalPitch; /*!< Gimbal pitch mode <br>*/
+  /*!< 1: continue the waypoint <br>
+  / *！<0：退出航点和故障保护<br> * /
+   / *！<1：继续航路点<br> * /*/
+  uint8_t gimbalPitch; /*!< Gimbal pitch mode <br> 云台俯仰模式<br>*/
   /*!< 0: free mode, no control on gimbal <br>*/
-  /*!< 1: auto mode, Smooth transition between waypoints <br>*/
-  float64_t latitude;     /*!< Focus latitude (radian) */
-  float64_t longitude;    /*!< Focus longitude (radian) */
-  float32_t altitude;     /*!< Focus altitude (relative takeoff point height) */
-  uint8_t   reserved[16]; /*!< Reserved, must be set to 0 */
+  /*!< 1: auto mode, Smooth transition between waypoints <br>
+  / *！<0：自由模式，不控制云台<br> * /
+   / *！<1：自动模式，航点之间的平滑过渡<br> * /*/
+  float64_t latitude;     /*!< Focus latitude (radian) 聚焦纬度（弧度）*/
+  float64_t longitude;    /*!< Focus longitude (radian) 聚焦经度（弧度）*/
+  float32_t altitude;     /*!< Focus altitude (relative takeoff point height) 聚焦高度（相对起飞点高度）*/
+  uint8_t   reserved[16]; /*!< Reserved, must be set to 0 保留，必须设置为0 */
 
 } WayPointInitSettings; // pack(1)
 
@@ -125,35 +146,37 @@ typedef struct WayPointInitSettings
  */
 typedef struct WayPointSettings
 {
-  uint8_t   index;     /*!< Index to be uploaded */
-  float64_t latitude;  /*!< Latitude (radian) */
-  float64_t longitude; /*!< Longitude (radian) */
-  float32_t altitude;  /*!< Altitude (relative altitude from takeoff point) */
-  float32_t damping; /*!< Bend length (effective coordinated turn mode only) */
-  int16_t   yaw;     /*!< Yaw (degree) */
-  int16_t   gimbalPitch; /*!< Gimbal pitch */
-  uint8_t   turnMode;    /*!< Turn mode <br> */
-  /*!< 0: clockwise <br>*/
-  /*!< 1: counter-clockwise <br>*/
+  uint8_t   index;     /*!< Index to be uploaded 要上传的索引*/
+  float64_t latitude;  /*!< Latitude (radian) 纬度（弧度）*/
+  float64_t longitude; /*!< Longitude (radian) 经度（弧度）*/
+  float32_t altitude;  /*!< Altitude (relative altitude from takeoff point) 高度（距起飞点的相对高度）*/
+  float32_t damping; /*!< Bend length (effective coordinated turn mode only) 弯曲长度（仅适用于有效协调转弯模式）*/
+  int16_t   yaw;     /*!< Yaw (degree) 偏航（度）*/
+  int16_t   gimbalPitch; /*!< Gimbal pitch 云台俯角*/
+  uint8_t   turnMode;    /*!< Turn mode <br> 转向模式<br>*/
+  /*!< 0: clockwise <br> 顺时针*/
+  /*!< 1: counter-clockwise <br> 逆时针*/
   uint8_t reserved[8]; /*!< Reserved */
-  uint8_t hasAction;   /*!< Action flag <br>*/
-  /*!< 0: no action <br>*/
-  /*!< 1: has action <br>*/
-  uint16_t actionTimeLimit;      /*!< Action time limit */
-  uint8_t  actionNumber : 4;     /*!< Total number of actions */
-  uint8_t  actionRepeat : 4;     /*!< Total running times */
-  uint8_t  commandList[16];      /*!< action list.Take value from enum WaypointActionTypeFormat.*/
-  int16_t  commandParameter[16]; /*!< action parameters.Details Please see notes of enum WaypointActionTypeFormat's action*/
+  uint8_t hasAction;   /*!< Action flag <br> 动作标志<br>*/
+  /*!< 0: no action <br> 无动作*/
+  /*!< 1: has action <br> 有动作*/
+  uint16_t actionTimeLimit;      /*!< Action time limit 动作时间限制*/
+  uint8_t  actionNumber : 4;     /*!< Total number of actions 动作总数*/
+  uint8_t  actionRepeat : 4;     /*!< Total running times 总运行时间*/
+  uint8_t  commandList[16];      /*!< action list.Take value from enum WaypointActionTypeFormat.
+  操作列表。从枚举WaypointActionTypeFormat中获取值。*/
+  int16_t  commandParameter[16]; /*!< action parameters.Details Please see notes of enum WaypointActionTypeFormat's action
+  操作参数。详细信息请参见枚举WaypointActionTypeFormat的操作说明*/
 } WayPointSettings;              // pack(1)
 
 typedef enum WaypointActionTypeFormat
 {
-  WP_ACTION_STAY                 = 0,  /*!< no action.uint of action parameter:ms*/
-  WP_ACTION_SIMPLE_SHOT          = 1,  /*!< take picture action.action parameters Action parameter have no effect.limit time:6s*/
-  WP_ACTION_VIDEO_START          = 2,  /*!< start take video action.action parameters Action parameter have no effect.limit time:6s*/
-  WP_ACTION_VIDEO_STOP           = 3,  /*!< stop video action.action parameters Action parameter have no effect.limit time:6s*/
-  WP_ACTION_CRAFT_YAW            = 4,  /*!< craft control yaw action.uint of action parameter:degree. range:-180 ~ 180*/
-  WP_ACTION_GIMBAL_PITCH         = 5,  /*!< gimbal control pitch action.uint of action parameter:degree. range:-90 ~ 0*/
+  WP_ACTION_STAY                 = 0,  /*!< no action.uint of action parameter:ms 无action.uint动作参数：ms*/
+  WP_ACTION_SIMPLE_SHOT          = 1,  /*!< take picture action.action parameters Action parameter have no effect.limit time:6s 拍摄图片action.action参数Action参数无效。限制时间：6s*/
+  WP_ACTION_VIDEO_START          = 2,  /*!< start take video action.action parameters Action parameter have no effect.limit time:6s 开始拍摄视频动作。动作参数动作参数无效。限制时间：6秒*/
+  WP_ACTION_VIDEO_STOP           = 3,  /*!< stop video action.action parameters Action parameter have no effect.limit time:6s 停止视频动作。动作参数动作参数无效。限制时间：6s*/
+  WP_ACTION_CRAFT_YAW            = 4,  /*!< craft control yaw action.uint of action parameter:degree. range:-180 ~ 180 探测器控制偏航作用。作用参数：度。 范围：-180〜180*/
+  WP_ACTION_GIMBAL_PITCH         = 5,  /*!< gimbal control pitch action.uint of action parameter:degree. range:-90 ~ 0 云台控制俯仰动作。动作参数单位：度。 范围：-90〜0*/
 } WaypointActionTypeFormat;
 
 /**

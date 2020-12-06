@@ -1,3 +1,4 @@
+
 /*! @file camera_stream_poll_sample.cpp
  *  @version 4.0.0
  *  @date Feb 1st 2018

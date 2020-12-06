@@ -250,10 +250,10 @@ ErrorCode::ErrorCodeType WaypointV2MissionSample::runWaypointV2Mission()
 }
 
 ErrorCode::ErrorCodeType WaypointV2MissionSample::initMissionSetting(int timeout) {
-
-  uint16_t polygonNum = 6;
+/*
+  uint16_t polygonNum = 6;  ******
   float32_t radius = 6;
-
+*/
   uint16_t actionNum = 5;
   srand(int(time(0)));
 
@@ -272,7 +272,7 @@ ErrorCode::ErrorCodeType WaypointV2MissionSample::initMissionSetting(int timeout
   missionInitSettings.autoFlightSpeed = 2;
   missionInitSettings.exitMissionOnRCSignalLost = 1;
   missionInitSettings.gotoFirstWaypointMode = DJIWaypointV2MissionGotoFirstWaypointModePointToPoint;
-  missionInitSettings.mission =  generatePolygonWaypoints(radius, polygonNum);
+  missionInitSettings.mission =  generatePolygonWaypoints();
   missionInitSettings.missTotalLen = missionInitSettings.mission.size();
 
   ErrorCode::ErrorCodeType ret = vehiclePtr->waypointV2Mission->init(&missionInitSettings,timeout);
@@ -415,11 +415,10 @@ void WaypointV2MissionSample::setGlobalCruiseSpeed(const GlobalCruiseSpeed &crui
   DSTATUS("Current cruise speed is: %f m/s", cruiseSpeed);
 }
 
-std::vector<WaypointV2> WaypointV2MissionSample::generatePolygonWaypoints(float32_t radius, uint16_t polygonNum) {
+std::vector<WaypointV2> WaypointV2MissionSample::generatePolygonWaypoints() {
   // Let's create a vector to store our waypoints in.
   std::vector<WaypointV2> waypointList;
   WaypointV2 startPoint;
-  WaypointV2 waypointV2;
 
   Telemetry::TypeMap<TOPIC_GPS_FUSED>::type subscribeGPosition = vehiclePtr->subscribe->getValue<TOPIC_GPS_FUSED>();
   startPoint.latitude  = subscribeGPosition.latitude;
@@ -427,18 +426,17 @@ std::vector<WaypointV2> WaypointV2MissionSample::generatePolygonWaypoints(float3
   startPoint.relativeHeight = 15;
   setWaypointV2Defaults(startPoint);
   waypointList.push_back(startPoint);
-
-  // Iterative algorithm
-  for (int i = 0; i < polygonNum; i++) {
-    float32_t angle = i * 2 * M_PI / polygonNum;
-    setWaypointV2Defaults(waypointV2);
-    float32_t X = radius * cos(angle);
-    float32_t Y = radius * sin(angle);
-    waypointV2.latitude = X/EARTH_RADIUS + startPoint.latitude;
-    waypointV2.longitude = Y/(EARTH_RADIUS * cos(startPoint.latitude)) + startPoint.longitude;
-    waypointV2.relativeHeight = startPoint.relativeHeight ;
-    waypointList.push_back(waypointV2);
-  }
+  startPoint.latitude = 80.111;
+  startPoint.longitude = 120.2222;
+  waypointList.push_back(startPoint);
+  startPoint.latitude = 81.1111;
+  startPoint.longitude = 120.1111;
+  waypointList.push_back(startPoint);
+  startPoint.latitude = 80.3333;
+  startPoint.longitude = 120.3333;
+  waypointList.push_back(startPoint);
+  startPoint.latitude = 80.4444;
+  startPoint.longitude = 120.4444;
   waypointList.push_back(startPoint);
   return waypointList;
 }
@@ -451,7 +449,7 @@ std::vector<DJIWaypointV2Action> WaypointV2MissionSample::generateWaypointAction
   {
     DJIWaypointV2SampleReachPointTriggerParam sampleReachPointTriggerParam;
     sampleReachPointTriggerParam.waypointIndex = i;
-    sampleReachPointTriggerParam.terminateNum = 0;
+    sampleReachPointTriggerParam.terminateNum = 1;
 
     auto *trigger = new DJIWaypointV2Trigger(DJIWaypointV2ActionTriggerTypeSampleReachPoint,&sampleReachPointTriggerParam);
     auto *cameraActuatorParam = new DJIWaypointV2CameraActuatorParam(DJIWaypointV2ActionActuatorCameraOperationTypeTakePhoto, nullptr);

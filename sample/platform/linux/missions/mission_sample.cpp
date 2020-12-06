@@ -53,7 +53,7 @@ setUpSubscription(DJI::OSDK::Vehicle* vehicle, int responseTimeout)
   int       freq            = 10;
   TopicName topicList10Hz[] = { TOPIC_GPS_FUSED };
   int       numTopic        = sizeof(topicList10Hz) / sizeof(topicList10Hz[0]);
-  bool      enableTimestamp = false;
+  bool      enableTimestamp = false; //启用时间戳
 
   bool pkgStatus = vehicle->subscribe->initPackageFromTopicList(
     DEFAULT_PACKAGE_INDEX, numTopic, topicList10Hz, enableTimestamp, freq);
@@ -106,7 +106,7 @@ static void WaypointEventCallBack(Vehicle* vehicle, RecvContainer recvFrame,
 }
 
 bool
-runWaypointMission(Vehicle* vehicle, uint8_t numWaypoints, int responseTimeout)
+runWaypointMission(Vehicle* vehicle, uint8_t numWaypoints, int responseTimeout)  
 {
   if (!vehicle->isM100() && !vehicle->isLegacyM600())
   {
@@ -120,15 +120,15 @@ runWaypointMission(Vehicle* vehicle, uint8_t numWaypoints, int responseTimeout)
 
   // Waypoint Mission : Initialization
   WayPointInitSettings fdata;
-  setWaypointInitDefaults(&fdata);
+  setWaypointInitDefaults(&fdata);  //对fdata进行初始化少量改变
 
   fdata.indexNumber =
-    numWaypoints + 1; // We add 1 to get the aircarft back to the start.
+    numWaypoints + 1; // We add 1 to get the aircarft back to the start.   //其功能是多边形 所以加上初始点
 
   float64_t increment = 0.000001;
-  float32_t start_alt = 10;
+  float32_t start_alt = 10; //高度
 
-  ACK::ErrorCode initAck = vehicle->missionManager->init(
+  ACK::ErrorCode initAck = vehicle->missionManager->init(   //初始化
     DJI_MISSION_TYPE::WAYPOINT, responseTimeout, &fdata);
 
   vehicle->missionManager->wpMission->setWaypointEventCallback(&WaypointEventCallBack,vehicle);
@@ -138,10 +138,10 @@ runWaypointMission(Vehicle* vehicle, uint8_t numWaypoints, int responseTimeout)
     ACK::getErrorCodeMessage(initAck, __func__);
   }
 
-  vehicle->missionManager->printInfo();
+  vehicle->missionManager->printInfo();   //目前是只有一个路点
   std::cout << "Initializing Waypoint Mission..\n";
 
-  // Waypoint Mission: Create Waypoints
+  // Waypoint Mission: Create Waypoints 创造路点
   std::vector<WayPointSettings> generatedWaypts =
     createWaypoints(vehicle, numWaypoints, increment, start_alt);
   std::cout << "Creating Waypoints..\n";
@@ -213,8 +213,8 @@ createWaypoints(DJI::OSDK::Vehicle* vehicle, int numWaypoints,
                 float64_t distanceIncrement, float32_t start_alt)
 {
   // Create Start Waypoint
-  WayPointSettings start_wp;
-  setWaypointDefaults(&start_wp);
+  WayPointSettings start_wp;  //路点结构体的对象
+  setWaypointDefaults(&start_wp);  //改变对象的一些值
 
   // Global position retrieved via subscription
   Telemetry::TypeMap<TOPIC_GPS_FUSED>::type subscribeGPosition;
@@ -223,10 +223,10 @@ createWaypoints(DJI::OSDK::Vehicle* vehicle, int numWaypoints,
 
   if (!vehicle->isM100() && !vehicle->isLegacyM600())
   {
-    subscribeGPosition = vehicle->subscribe->getValue<TOPIC_GPS_FUSED>();
+    subscribeGPosition = vehicle->subscribe->getValue<TOPIC_GPS_FUSED>();  //为了获得飞机的初始位置
     start_wp.latitude  = subscribeGPosition.latitude;
     start_wp.longitude = subscribeGPosition.longitude;
-    start_wp.altitude  = start_alt;
+    start_wp.altitude  = start_alt;  //第一个路点的高度  
     printf("Waypoint created at (LLA): %f \t%f \t%f\n",
            subscribeGPosition.latitude, subscribeGPosition.longitude,
            start_alt);
@@ -243,7 +243,7 @@ createWaypoints(DJI::OSDK::Vehicle* vehicle, int numWaypoints,
   }
 
   std::vector<DJI::OSDK::WayPointSettings> wpVector =
-    generateWaypointsPolygon(&start_wp, distanceIncrement, numWaypoints);
+    generateWaypointsPolygon(&start_wp, distanceIncrement, numWaypoints); //设置其他的值
   return wpVector;
 }
 

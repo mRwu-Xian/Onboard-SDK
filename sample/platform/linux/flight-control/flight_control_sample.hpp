@@ -32,6 +32,11 @@
 
 #ifndef DJIOSDK_FLIGHTCONTROL_HPP
 #define DJIOSDK_FLIGHTCONTROL_HPP
+#include "dji_flight_actions_module.hpp"
+#include "dji_flight_assistant_module.hpp"
+#include "dji_flight_joystick_module.hpp"
+
+
 
 // System Includes
 #include <cmath>

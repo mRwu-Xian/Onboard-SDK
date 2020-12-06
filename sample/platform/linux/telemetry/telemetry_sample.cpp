@@ -41,7 +41,7 @@ getBroadcastData(DJI::OSDK::Vehicle* vehicle, int responseTimeout)
 {
   // Counters
   int elapsedTimeInMs = 0;
-  int timeToPrintInMs = 2000;
+  int timeToPrintInMs = 1000;
 
   // We will listen to five broadcast data sets:
   // 1. Flight Status
@@ -117,7 +117,7 @@ subscribeToData(Vehicle* vehicle, int responseTimeout)
   bool rtkAvailable = false;
   // Counters
   int elapsedTimeInMs = 0;
-  int timeToPrintInMs = 20000;
+  int timeToPrintInMs = 500;  //由20000改为10000
 
   // We will subscribe to six kinds of data:
   // 1. Flight Status at 1 Hz
@@ -133,17 +133,19 @@ subscribeToData(Vehicle* vehicle, int responseTimeout)
 
   // Telemetry: Verify the subscription
   ACK::ErrorCode subscribeStatus;
+  /*
   subscribeStatus = vehicle->subscribe->verify(responseTimeout);
   if (ACK::getError(subscribeStatus) != ACK::SUCCESS)
   {
     ACK::getErrorCodeMessage(subscribeStatus, __func__);
     return false;
   }
+  */
 
   // Package 0: Subscribe to flight status at freq 1 Hz
   int       pkgIndex        = 0;
   int       freq            = 1;
-  TopicName topicList1Hz[]  = { TOPIC_STATUS_FLIGHT };
+  TopicName topicList1Hz[]  = { TOPIC_STATUS_FLIGHT  };
   int       numTopic        = sizeof(topicList1Hz) / sizeof(topicList1Hz[0]);
   bool      enableTimestamp = false;
 
@@ -278,7 +280,7 @@ subscribeToData(Vehicle* vehicle, int responseTimeout)
   TypeMap<TOPIC_RTK_YAW>::type           rtk_yaw;
   TypeMap<TOPIC_RTK_YAW_INFO>::type      rtk_yaw_info;
 
-  // Print in a loop for 2 sec
+  // Print in a loop for 1 sec   改 从 2秒改为1秒
   while (elapsedTimeInMs < timeToPrintInMs)
   {
     flightStatus = vehicle->subscribe->getValue<TOPIC_STATUS_FLIGHT>();
@@ -315,10 +317,11 @@ subscribeToData(Vehicle* vehicle, int responseTimeout)
     }
     std::cout << "-------\n\n";
     usleep(5000);
-    elapsedTimeInMs += 5;
+    elapsedTimeInMs += 20;  //该+=5
   }
 
   std::cout << "Done printing!\n";
+  
   vehicle->subscribe->removePackage(0, responseTimeout);
   vehicle->subscribe->removePackage(1, responseTimeout);
   vehicle->subscribe->removePackage(2, responseTimeout);
@@ -353,7 +356,7 @@ subscribeToDataForInteractivePrint(Vehicle* vehicle, int responseTimeout)
   // Package 0: Subscribe to flight status at freq 1 Hz
   int       pkgIndex        = 0;
   int       freq            = 50;
-  TopicName topicList50Hz[]  = {TOPIC_RC
+  TopicName topicList50Hz[]  = { TOPIC_RC
                                 ,TOPIC_RC_FULL_RAW_DATA
                                 ,TOPIC_RC_WITH_FLAG_DATA
                                 ,TOPIC_ESC_DATA
@@ -364,14 +367,18 @@ subscribeToDataForInteractivePrint(Vehicle* vehicle, int responseTimeout)
                                 ,TOPIC_AVOID_DATA
                                 ,TOPIC_HOME_POINT_SET_STATUS
                                 ,TOPIC_HOME_POINT_INFO
-  };
+                                ,TOPIC_STATUS_LANDINGGEAR
+                                ,TOPIC_QUATERNION
+                                ,TOPIC_COMPASS
+                                ,TOPIC_GIMBAL_STATUS
+                                ,TOPIC_STATUS_MOTOR_START_ERROR
+  }; 
 
   int       numTopic        = sizeof(topicList50Hz) / sizeof(topicList50Hz[0]);
   bool      enableTimestamp = false;
 
   bool pkgStatus = vehicle->subscribe->initPackageFromTopicList(
           pkgIndex, numTopic, topicList50Hz, enableTimestamp, freq);
-
   if (!(pkgStatus))
   {
     return pkgStatus;
@@ -424,11 +431,14 @@ subscribeToDataForInteractivePrint(Vehicle* vehicle, int responseTimeout)
     TypeMap<TOPIC_AVOID_DATA>::type     avoidData;
     TypeMap<TOPIC_HOME_POINT_SET_STATUS>::type homePointSetStatus;
     TypeMap<TOPIC_HOME_POINT_INFO>::type  homeLocationInfo;
+    TypeMap<TOPIC_STATUS_LANDINGGEAR>::type  landinggear;
+    
+           
 
     // Counters
     int printFrequency          = 50; //Hz
     int printIntervalInMicroSec = 1e6/printFrequency;
-    int totalPrintTimeInSec     = 10;
+    int totalPrintTimeInSec     = 10; //改10为1
     int totalSample             = totalPrintTimeInSec * printFrequency;
     // Print in a loop for 2 sec
     while(totalSample--)
@@ -515,13 +525,14 @@ subscribeToDataForInteractivePrint(Vehicle* vehicle, int responseTimeout)
         case 8:
           avoidData =  vehicle->subscribe->getValue<TOPIC_AVOID_DATA>();
           printf("down = %.2f, down health = %d, front = %.2f,  front health = %d, right = %.2f, right health = %d,"
-                 " back = %.2f, back health = %d, left = %.2f, left health = %d, up = %.2f, up health = %d\n",
+                 " back = %.2f, back health = %d, left = %.2f, left health = %d, up = %.2f, up health = %d  \n",
                  avoidData.down , avoidData.downHealth ,
                  avoidData.front, avoidData.frontHealth,
                  avoidData.right, avoidData.rightHealth,
                  avoidData.back , avoidData.backHealth ,
                  avoidData.left , avoidData.leftHealth ,
-                 avoidData.up   , avoidData.upHealth);
+                 avoidData.up   , avoidData.upHealth         
+                 );
           break;
         case 9:
           homePointSetStatus =  vehicle->subscribe->getValue<TOPIC_HOME_POINT_SET_STATUS>();
@@ -542,8 +553,10 @@ subscribeToDataForInteractivePrint(Vehicle* vehicle, int responseTimeout)
     }
   }
   std::cout << "Done printing!\n";
+  /*
   vehicle->subscribe->removeAllExistingPackages();
   return true;
+  */
 }
 
 bool

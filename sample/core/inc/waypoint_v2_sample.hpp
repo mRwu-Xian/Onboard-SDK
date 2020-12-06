@@ -157,9 +157,9 @@ public:
    *  @param polygonNum number of polygon sides
    *  @return vector of DJIWaypointV2
    */
-//  std::vector<DJIWaypointV2> generatePolygonWaypoints(float32_t radius, uint16_t polygonNum);
+ //std::vector<DJIWaypointV2> generatePolygonWaypoints(float32_t radius, uint16_t polygonNum);
 
-  std::vector<WaypointV2> generatePolygonWaypoints(float32_t radius, uint16_t polygonNum);
+  std::vector<WaypointV2> generatePolygonWaypoints();
 
 
   /*! @brief Sample generate polygon waypoints

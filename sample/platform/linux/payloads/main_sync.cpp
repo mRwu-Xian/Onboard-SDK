@@ -95,7 +95,7 @@ int main(int argc, char **argv) {
         << std::endl
         << "| [m] Rotate gimbal sample                                       |"
         << std::endl
-        << "| [n] Reset gimbal sample                                        |"
+        << "| [n] Reset gimbaml sample                                        |"
         << std::endl
         << "| [q] Quit                                                       |"
         << std::endl;

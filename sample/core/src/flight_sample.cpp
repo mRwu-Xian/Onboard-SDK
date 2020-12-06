@@ -168,6 +168,7 @@ bool FlightSample::moveByPositionOffset(const Vector3f& offsetDesired,
     }
     usleep(cycleTimeInMs * 1000);
     elapsedTimeInMs += cycleTimeInMs;
+    DERROR("ARE YOU OK elspsed :%d?",elapsedTimeInMs);
   }
 
   while (brakeCounter < withinControlBoundsTimeReqmt) {

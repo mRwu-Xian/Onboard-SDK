@@ -29,9 +29,11 @@
  * SOFTWARE.
  *
  */
-
+#include "dji_flight_controller.hpp"
 #include "flight_control_sample.hpp"
-
+#include "dji_telemetry.hpp"
+#include<iostream>
+using namespace DJI;
 using namespace DJI::OSDK;
 using namespace DJI::OSDK::Telemetry;
 
@@ -62,7 +64,8 @@ monitoredTakeoff(Vehicle* vehicle, int timeout)
     pkgIndex                  = 0;
     int       freq            = 10;
     TopicName topicList10Hz[] = { TOPIC_STATUS_FLIGHT,
-                                  TOPIC_STATUS_DISPLAYMODE };
+                                  TOPIC_STATUS_DISPLAYMODE,
+                                 };
     int  numTopic        = sizeof(topicList10Hz) / sizeof(topicList10Hz[0]);
     bool enableTimestamp = false;
 
@@ -80,8 +83,20 @@ monitoredTakeoff(Vehicle* vehicle, int timeout)
       vehicle->subscribe->removePackage(pkgIndex, timeout);
       return false;
     }
+    
+   
   }
+  Telemetry::HomeLocationData  home = {
+      home.latitude = 23.4324,
+      home.longitude = 114.3243
+  };
+  vehicle->flightController->setHomeLocationSync(home , 1);
 
+  vehicle->flightController->setCollisionAvoidanceEnabledSync(
+      FlightController::AvoidEnable::AVOID_ENABLE, 1);
+
+  
+  
   // Start takeoff
   ACK::ErrorCode takeoffStatus = vehicle->control->takeoff(timeout);
   if (ACK::getError(takeoffStatus) != ACK::SUCCESS)
@@ -606,7 +621,8 @@ monitoredLanding(Vehicle* vehicle, int timeout)
     pkgIndex                  = 0;
     int       freq            = 10;
     TopicName topicList10Hz[] = { TOPIC_STATUS_FLIGHT,
-                                  TOPIC_STATUS_DISPLAYMODE };
+                                  TOPIC_STATUS_DISPLAYMODE
+                                };
     int  numTopic        = sizeof(topicList10Hz) / sizeof(topicList10Hz[0]);
     bool enableTimestamp = false;
 
@@ -616,6 +632,7 @@ monitoredLanding(Vehicle* vehicle, int timeout)
     {
       return pkgStatus;
     }
+    
     subscribeStatus = vehicle->subscribe->startPackage(pkgIndex, timeout);
     if (ACK::getError(subscribeStatus) != ACK::SUCCESS)
     {
@@ -625,15 +642,29 @@ monitoredLanding(Vehicle* vehicle, int timeout)
       return false;
     }
   }
-
-  // Start landing
-  ACK::ErrorCode landingStatus = vehicle->control->land(timeout);
+  // Start GoHome
+  DSTATUS("Start go home action");
+  /*
+  typedef Telemetry::HomeLocationData HomeLocation;
+  HomeLocation Home = {
+      Home.latitude = 22.5436,
+      Home.longitude = 114.0000
+    };
+    
+  vehicle->flightController->setHomeLocationSync( Home , timeout );
+  DJI::OSDK::FlightAssistant::GoHomeAltitude att = 40;
+  
+  vehicle->flightController->setGoHomeAltitudeSync(att , timeout );
+*/
+  /* vehicle->flightController->startGoHomeSync (timeout);*/
+  ACK::ErrorCode landingStatus = vehicle->control->land(timeout); 
   if (ACK::getError(landingStatus) != ACK::SUCCESS)
   {
     ACK::getErrorCodeMessage(landingStatus, func);
     return false;
   }
 
+  
   // First check: Landing started
   int landingNotStarted = 0;
   int timeoutCycles     = 20;
@@ -677,6 +708,8 @@ monitoredLanding(Vehicle* vehicle, int timeout)
   {
     std::cout << "Landing...\n";
   }
+
+  
 
   // Second check: Finished landing
   if (!vehicle->isM100() && !vehicle->isLegacyM600())

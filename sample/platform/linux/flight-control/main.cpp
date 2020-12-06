@@ -81,9 +81,9 @@ int main(int argc, char** argv) {
       DSTATUS("Take off over!\n");
       moveByPositionOffset(vehicle, 0, 6, 6, 30, 0.8, 1);
       DSTATUS("Step 1 over!\n");
-      moveByPositionOffset(vehicle, 6, 0, -3, -30, 0.8, 1);
+      moveByPositionOffset(vehicle, 10, 0, 12, -30, 0.8, 1);
       DSTATUS("Step 2 over!\n");
-      moveByPositionOffset(vehicle, -6, -6, 0, 0, 0.8, 1);
+      moveByPositionOffset(vehicle, 10, 13, -3, 0, 0.8, 1);
       DSTATUS("Step 3 over!\n");
       monitoredLanding(vehicle);
       break;

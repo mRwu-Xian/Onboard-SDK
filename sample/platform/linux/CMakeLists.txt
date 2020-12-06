@@ -136,5 +136,7 @@ add_subdirectory(advanced-sensing)
 add_subdirectory(hms)
 add_subdirectory(battery)
 add_subdirectory(mop)
-
+add_subdirectory(test-m)
+add_subdirectory(telemetry-test)
+add_subdirectory(flight_status)
 

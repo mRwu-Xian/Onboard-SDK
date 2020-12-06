@@ -85,7 +85,7 @@ main(int argc, char** argv) {
         << std::endl
         << "| [a] Start getting FPV H264 stream sample                       |"
         << std::endl
-        << "| [b] Start getting main camera H264 stream sample               |"
+        << "| [b] Start getting main camera stream sample               |"
         << std::endl
         << "| [c] Start getting vice camera H264 stream sample               |"
         << std::endl

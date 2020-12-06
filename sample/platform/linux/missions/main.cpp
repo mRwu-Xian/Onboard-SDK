@@ -54,7 +54,7 @@ main(int argc, char** argv)
   vehicle->control->obtainCtrlAuthority(functionTimeout);
 
   // Setup variables for use
-  uint8_t wayptPolygonSides;
+  uint8_t num;
   int     hotptInitRadius;
   int     responseTimeout = 1;
 
@@ -74,8 +74,8 @@ main(int argc, char** argv)
   {
     case 'a':
       // Waypoint call
-      wayptPolygonSides = 6;
-      runWaypointMission(vehicle, wayptPolygonSides, responseTimeout);
+      num = 6;
+      runWaypointMission(vehicle, num, responseTimeout);
       break;
     case 'b':
       hotptInitRadius = 10;
